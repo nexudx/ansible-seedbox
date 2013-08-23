@@ -1,5 +1,5 @@
 ---
 - hosts: seedbox
   roles:
-    - common
     - config
+    - common
