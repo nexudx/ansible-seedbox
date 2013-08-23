@@ -1,0 +1,28 @@
+---
+# file group_vars/all.yml
+
+# Directory locations
+home: /home/ubuntu
+contrib: /home/ubuntu/contrib
+
+# contrib sources and extracted dir names
+svn_xmlrpc_c: http://svn.code.sf.net/p/xmlrpc-c/code/stable/
+dir_xmlrpc: xmlrpc-c
+
+src_libtorrent: http://libtorrent.rakshasa.no/downloads/
+ver_libtorrent: libtorrent-0.13.2
+
+src_rtorrent: http://libtorrent.rakshasa.no/downloads/
+ver_rtorrent: rtorrent-0.9.2
+
+src_rutorrent: https://rutorrent.googlecode.com/files/
+ver_rutorrent: rutorrent-3.5
+dir_rutorrent: rutorrent
+
+src_ruplugins: https://rutorrent.googlecode.com/files/
+ver_ruplugins: plugins-3.5
+dir_ruplugins: plugins
+
+# rtorrent config settings
+port_range: 6666-9999
+scgi_addr: localhost:5000

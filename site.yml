@@ -1,0 +1,4 @@
+---
+- include: build.yml
+#- include: deploy.yml
+#- include: config.yml

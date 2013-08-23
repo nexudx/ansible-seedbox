@@ -1,0 +1,60 @@
+- apt: name={{ item }} state=installed update_cache=yes cache_valid_time=3600
+  with_items: 
+    - subversion
+    - build-essential
+    - automake
+    - libtool
+    - libcppunit-dev
+    - libsigc++-2.0-dev
+    - libssl-dev
+    - libcurl4-openssl-dev
+    - unzip
+    - unrar-free
+    - curl
+    - libncurses5-dev
+    - apache2
+    - php5
+    - php5-cli
+    - php5-curl
+    - libapache2-mod-scgi
+  sudo: yes
+- file: path={{ contrib }} state=directory
+- subversion: dest={{ contrib }}/{{ dir_xmlrpc }} repo={{ svn_xmlrpc_c }}
+- get_url: dest={{ contrib}} url={{ item }}.tar.gz
+  with_items:
+    - "{{ src_libtorrent }}{{ ver_libtorrent }}"
+    - "{{ src_rtorrent }}{{ ver_rtorrent }}"
+    - "{{ src_rutorrent }}{{ ver_rutorrent }}"
+    - "{{ src_ruplugins }}{{ ver_ruplugins }}"
+- command: tar xvf {{ ver_libtorrent }}.tar.gz  chdir={{contrib}} creates={{ ver_libtorrent }}
+- command: tar xvf {{ ver_rtorrent }}.tar.gz  chdir={{contrib}} creates={{ ver_rtorrent }}
+- command: tar xvf {{ ver_rutorrent }}.tar.gz  chdir={{contrib}} creates={{ dir_rutorrent }}
+- command: tar xvf {{ ver_ruplugins }}.tar.gz  chdir={{contrib}} creates={{ dir_ruplugins }}
+
+- name: Build and Install libtorrent
+  command: chdir={{ contrib }}/{{ ver_libtorrent }} {{ item }} #creates=/usr/bin/libtool
+  sudo: yes
+  with_items:
+    - ./autogen.sh
+    - ./configure
+    - make 
+    - make install 
+
+- name: Build and Install xmlrpc
+  command: chdir={{ contrib }}/{{ dir_xmlrpc }} {{ item }} #creates=/usr/local/bin/xmlrpc-c-config
+  sudo: yes
+  with_items:
+    - ./configure --disable-cplusplus
+    - make 
+    - make install
+
+- name: Build and Install rtorrent
+  command: chdir={{ contrib }}/{{ ver_rtorrent }} {{ item }} #creates=/usr/local/bin/rtorrent
+  sudo: yes
+  with_items:
+    - ./autogen.sh
+    - ./configure --with-xmlrpc-c
+    - make 
+    - make install
+    - ldconfig 
+

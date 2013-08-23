@@ -1,0 +1,65 @@
+---
+- hosts: seedbox
+  vars: 
+    home: /home/ubuntu
+    contrib: /home/ubuntu/contrib
+    svn_xmlrpc_c: http://svn.code.sf.net/p/xmlrpc-c/code/stable/
+    src_libtorrent: http://libtorrent.rakshasa.no/downloads/
+    ver_libtorrent: libtorrent-0.13.2
+    src_rtorrent: http://libtorrent.rakshasa.no/downloads/
+    ver_rtorrent: rtorrent-0.9.2
+    src_rutorrent: https://rutorrent.googlecode.com/files/
+    ver_rutorrent: rutorrent-3.5
+    dir_rutorrent: rutorrent
+    src_ruplugins: https://rutorrent.googlecode.com/files/
+    ver_ruplugins: plugins-3.5
+    dir_ruplugins: plugins
+    dir_xmlrpc: xmlrpc-c
+    port_range: 6666-9999
+    scgi_addr: localhost:5000
+ # vars_prompt:
+ # - name: rutorrent_user
+ #   prompt: "rutorrent user"
+ #   private: no
+ # - name: rutorrent_password
+ #   prompt: "rutorrent password"
+ #   private: yes
+ #   encrypt: "md5_crypt"
+ #   confirm: yes
+ #   salt_size: 7
+  tasks:
+  - file: src=/etc/apache2/mods-available/scgi.load dest=/etc/apache2/mods-enabled/scgi.load state=link
+    sudo: yes
+    notify:
+    - restart apache
+
+  - name: Create rtorrent directories
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{ home }}/rtorrent"
+      - "{{ home }}/rtorrent/session"
+      - "{{ home }}/rtorrent/watch"
+      - "{{ home }}/rtorrent/download"
+  
+  - name: Deploy default rtorrent config
+    template: src=rtorrent.rc.j2 dest={{ home }}/.rtorrent.rc
+
+  - name: Depoly rutorrent
+    command: rsync -a {{ contrib }}/{{ dir_rutorrent }} /var/www
+    sudo: yes
+
+  - name: Deploy rutorrent plugins
+    command: rsync -a {{ contrib }}/{{ dir_ruplugins }} /var/www/plugins
+    sudo: yes
+
+ # - name: Add rutorrent user
+ #   command: htpasswd -bc /etc/apache2/.htpasswd {{ rutorrent_user}} {{ rutorrent_password }} creates=/etc/apache2/.htpasswd
+ #   sudo: yes
+
+ ## - file: path=/etc/apache2/.htpasswd owner=root mode=0640
+ #   sudo: yes
+
+  handlers:
+  - name: restart apache
+    service: name=apache2 state=restarted
+    sudo: yes
