@@ -3,3 +3,14 @@
   roles:
     - config
     - common
+  vars_prompt:
+  - name: ru_user
+    prompt: "rutorrent user"
+    private: no
+  - name: ru_password
+    prompt: "rutorrent password"
+    private: yes
+    encrypt: "bcrypt"
+    confirm: yes
+    salt_size: 22
+

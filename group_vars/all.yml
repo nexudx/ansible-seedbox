@@ -24,5 +24,11 @@ ver_ruplugins: plugins-3.5
 dir_ruplugins: plugins
 
 # rtorrent config settings
+apache_user: www-data
 port_range: 6666-9999
 scgi_addr: localhost:5000
+
+# rutorrent / apache config settings
+ru_passwd_file: /etc/apache2/rupasswd
+ru_dir: /var/www/rutorrent
+ru_email: webmaster@localhost

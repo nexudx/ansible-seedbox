@@ -1,3 +1,4 @@
+# Get required build dependencies
 - apt: name={{ item }} state=installed update_cache=yes cache_valid_time=3600
   with_items: 
     - subversion
@@ -17,20 +18,38 @@
     - php5-cli
     - php5-curl
     - libapache2-mod-scgi
+    - python-passlib
+    # Optional
+    - ffmpeg
+    - mediainfo
   sudo: yes
+  tags: depends
+
+# Create contribution directory
 - file: path={{ contrib }} state=directory
+
+# Get source
 - subversion: dest={{ contrib }}/{{ dir_xmlrpc }} repo={{ svn_xmlrpc_c }}
+  tags: source
 - get_url: dest={{ contrib}} url={{ item }}.tar.gz
   with_items:
     - "{{ src_libtorrent }}{{ ver_libtorrent }}"
     - "{{ src_rtorrent }}{{ ver_rtorrent }}"
     - "{{ src_rutorrent }}{{ ver_rutorrent }}"
     - "{{ src_ruplugins }}{{ ver_ruplugins }}"
-- command: tar xvf {{ ver_libtorrent }}.tar.gz  chdir={{contrib}} creates={{ ver_libtorrent }}
-- command: tar xvf {{ ver_rtorrent }}.tar.gz  chdir={{contrib}} creates={{ ver_rtorrent }}
-- command: tar xvf {{ ver_rutorrent }}.tar.gz  chdir={{contrib}} creates={{ dir_rutorrent }}
-- command: tar xvf {{ ver_ruplugins }}.tar.gz  chdir={{contrib}} creates={{ dir_ruplugins }}
+  tags: source
 
+# Extract source
+- command: tar xvf {{ ver_libtorrent }}.tar.gz  chdir={{contrib}} creates={{ ver_libtorrent }}
+  tags: source
+- command: tar xvf {{ ver_rtorrent }}.tar.gz  chdir={{contrib}} creates={{ ver_rtorrent }}
+  tags: source
+- command: tar xvf {{ ver_rutorrent }}.tar.gz  chdir={{contrib}} creates={{ dir_rutorrent }}
+  tags: web
+- command: tar xvf {{ ver_ruplugins }}.tar.gz  chdir={{contrib}} creates={{ dir_ruplugins }}
+  tags: web
+
+# Build and install binaries and libs
 - name: Build and Install libtorrent
   command: chdir={{ contrib }}/{{ ver_libtorrent }} {{ item }} #creates=/usr/bin/libtool
   sudo: yes
@@ -39,6 +58,7 @@
     - ./configure
     - make 
     - make install 
+  tags: source
 
 - name: Build and Install xmlrpc
   command: chdir={{ contrib }}/{{ dir_xmlrpc }} {{ item }} #creates=/usr/local/bin/xmlrpc-c-config
@@ -47,6 +67,7 @@
     - ./configure --disable-cplusplus
     - make 
     - make install
+  tags: source
 
 - name: Build and Install rtorrent
   command: chdir={{ contrib }}/{{ ver_rtorrent }} {{ item }} #creates=/usr/local/bin/rtorrent
@@ -57,4 +78,33 @@
     - make 
     - make install
     - ldconfig 
+  tags: source
+    
+# Deploy rtorrent and rutorrent to /var/www
+- name: Create rtorrent directories
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ home }}/rtorrent"
+    - "{{ home }}/rtorrent/session"
+    - "{{ home }}/rtorrent/watch"
+    - "{{ home }}/rtorrent/download"
+  tags: web
+
+- name: Deploy rutorrent
+  command: rsync -a {{ contrib }}/{{ dir_rutorrent }}/ /var/www/rutorrent/
+  sudo: yes
+  tags: web
+
+- name: Deploy rutorrent plugins
+  command: rsync -a {{ contrib }}/{{ dir_ruplugins }}/ /var/www/rutorrent/plugins/
+  sudo: yes
+  tags: web
+
+- file: path=/var/www/rutorrent/ 
+        state=directory 
+        recurse=yes
+        owner={{ apache_user }} 
+        group={{ apache_user }} 
+  sudo: yes
+  tags: web
 
