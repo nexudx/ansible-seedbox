@@ -2,10 +2,6 @@
         ServerAdmin {{ ru_email }}
 
         DocumentRoot {{ ru_dir }}
-        <Directory />
-                Options FollowSymLinks
-                AllowOverride None
-        </Directory>
         <Directory {{ ru_dir }}>
                 Options Indexes FollowSymLinks MultiViews
                 AllowOverride None

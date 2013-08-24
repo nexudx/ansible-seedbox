@@ -23,17 +23,49 @@
     state=present
     owner=root
     group=www-data
-    mode=0640
+    mode=0600
   sudo: yes
 
 - name: Remove default sites-enabled
-  file: path=/etc/apache2/sites-enabled/000-default state=absent
+  command: a2dissite default
+  sudo: yes
+  notify:
+    - restart apache
+
+- name: Enable apache ssl
+  command: a2enmod ssl
+  sudo: yes
+  notify:
+    - restart apache
+
+- name: Create key and cert dir
+  file:
+    path=/etc/apache2/ssl
+    state=directory
+    owner=root
+    group=root
+  sudo: yes
+
+- name: Create openssl conf file
+  template:
+    src=openssl.conf.j2
+    dest={{ ssl_dir }}/openssl.conf
+    owner=root
+    group=root
+    mode=0640
+  sudo: yes
+
+- name: Create key and cert file
+  command: 
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config {{ ssl_dir }}/openssl.conf -keyout {{ ssl_dir }}/apache.key -out {{ ssl_dir }}/apache.crt
+    creates={{ ssl_dir }}/apache.key
+    creates={{ ssl_dir }}/apache.crt
   sudo: yes
 
 - name: Create rutorrent virtual directory
   template:
     src=rutorrent.j2
-    dest=/etc/apache2/sites-enabled/rutorrent
+    dest=/etc/apache2/sites-available/rutorrent
     owner=root
     group=root
   sudo: yes

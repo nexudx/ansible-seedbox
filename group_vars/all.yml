@@ -32,3 +32,12 @@ scgi_addr: localhost:5000
 ru_passwd_file: /etc/apache2/rupasswd
 ru_dir: /var/www/rutorrent
 ru_email: webmaster@localhost
+
+# ssl config settings
+ssl_dir: /etc/apache2/ssl
+ssl_country: AU # default
+ssl_state: .
+ssl_locality: .
+ssl_org: .
+ssl_org_unit: .
+ssl_common_name: rutorrent
