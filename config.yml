@@ -10,7 +10,5 @@
   - name: ru_password
     prompt: "rutorrent password"
     private: yes
-    encrypt: "bcrypt"
     confirm: yes
-    salt_size: 22
 

@@ -1,9 +1,15 @@
-<VirtualHost *:80>
+<IfModule mod_ssl.c>
+<VirtualHost _default_:443>
         ServerAdmin {{ ru_email }}
 
         DocumentRoot {{ ru_dir }}
         <Directory {{ ru_dir }}>
                 Options Indexes FollowSymLinks MultiViews
+                AuthType Basic
+                AuthName '{{ ru_login_prompt }}'
+                AuthUserFile '{{ ru_passwd_file }}'
+                #Require valid-user 
+                Require {{ ru_user }}
                 AllowOverride None
                 Order allow,deny
                 allow from all
@@ -12,5 +18,8 @@
         ErrorLog ${APACHE_LOG_DIR}/error.log
         LogLevel warn
         CustomLog ${APACHE_LOG_DIR}/access.log combined
+        SSLEngine on
+        SSLCertificateFile {{ ssl_dir }}/{{ ssl_cert }}
+        SSLCertificateKeyFile {{ ssl_dir }}/{{ ssl_key }}
 
 </VirtualHost>

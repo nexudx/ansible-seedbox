@@ -1,42 +1,23 @@
 ---
 # file: roles/config/tasks/main.ym;
 
-- name: Deploy default rtorrent config
-  template: 
-    src=rtorrent.rc.j2 
-    dest={{ home }}/.rtorrent.rc
-
-- name: Enable scgi for ru/r connectivity
-  file: 
-    src=/etc/apache2/mods-available/scgi.load 
-    dest=/etc/apache2/mods-enabled/scgi.load 
-    state=link
-  sudo: yes
-  notify:
-  - restart apache
-
-- name: Create rupasswd file
-  htpasswd: 
-    path={{ ru_passwd_file }}
-    name={{ ru_user }} 
-    password={{ ru_password }}
-    state=present
-    owner=root
-    group=www-data
-    mode=0600
-  sudo: yes
+## tags: apache
 
 - name: Remove default sites-enabled
   command: a2dissite default
   sudo: yes
+  tags: apache
   notify:
     - restart apache
 
 - name: Enable apache ssl
   command: a2enmod ssl
   sudo: yes
+  tags: apache
   notify:
     - restart apache
+
+## tags: ssl, newkey
 
 - name: Create key and cert dir
   file:
@@ -45,6 +26,7 @@
     owner=root
     group=root
   sudo: yes
+  tags: ssl
 
 - name: Create openssl conf file
   template:
@@ -54,13 +36,65 @@
     group=root
     mode=0640
   sudo: yes
+  tags: ssl
+
+- name: Delete current certs (tag newkey)
+  file: path={{ ssl_dir }}/{{ item }} state=absent
+  with_items:
+    - "{{ ssl_key }}"
+    - "{{ ssl_cert }}"
+  sudo: yes 
+  tags: newkey
 
 - name: Create key and cert file
   command: 
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config {{ ssl_dir }}/openssl.conf -keyout {{ ssl_dir }}/apache.key -out {{ ssl_dir }}/apache.crt
-    creates={{ ssl_dir }}/apache.key
-    creates={{ ssl_dir }}/apache.crt
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config {{ ssl_dir }}/openssl.conf -keyout {{ ssl_dir }}/{{ ssl_key }} -out {{ ssl_dir }}/{{ ssl_cert}}
+    creates={{ ssl_dir }}/{{ ssl_key }}
+    creates={{ ssl_dir }}/{{ ssl_cert }}
   sudo: yes
+  tags: ssl
+  notify:
+    - restart apache
+
+## tags: rutorrent
+
+- name: Deploy default rtorrent config
+  template: 
+    src=rtorrent.rc.j2 
+    dest={{ home }}/.rtorrent.rc
+  tags: ruconfig
+
+- name: Enable scgi for ru/r connectivity
+  file: 
+    src=/etc/apache2/mods-available/scgi.load 
+    dest=/etc/apache2/mods-enabled/scgi.load 
+    state=link
+  sudo: yes
+  tags: 
+    - ruconfig
+    - apache
+  notify:
+  - restart apache
+
+- name: Remove old rupassed file
+  file: 
+    path={{ ru_passwd_file }}
+    state=absent
+  sudo: yes
+  tags: ruconfig
+
+- name: Create rupasswd file
+  htpasswd: 
+    path={{ ru_passwd_file }}
+    name={{ ru_user }} 
+    password={{ ru_password }}
+    create=yes
+    state=present
+    owner=root
+    group=www-data
+    mode=0640
+  sudo: yes
+  tags: ruconfig
 
 - name: Create rutorrent virtual directory
   template:
@@ -69,9 +103,13 @@
     owner=root
     group=root
   sudo: yes
+  tags: 
+    - rutorrent
+    - apache
 
 - name: Enable rutorrent site
   command: a2ensite rutorrent
   sudo: yes
   notify:
     - restart apache
+  tags: rutorrent

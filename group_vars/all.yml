@@ -2,8 +2,8 @@
 # file group_vars/all.yml
 
 # Directory locations
-home: /home/ubuntu
-contrib: /home/ubuntu/contrib
+home: /home/vagrant
+contrib: /home/vagrant/contrib
 
 # contrib sources and extracted dir names
 svn_xmlrpc_c: http://svn.code.sf.net/p/xmlrpc-c/code/stable/
@@ -32,9 +32,12 @@ scgi_addr: localhost:5000
 ru_passwd_file: /etc/apache2/rupasswd
 ru_dir: /var/www/rutorrent
 ru_email: webmaster@localhost
+ru_login_prompt: rutorrent login
 
 # ssl config settings
 ssl_dir: /etc/apache2/ssl
+ssl_key: apache.key
+ssl_cert: apache.crt
 ssl_country: AU # default
 ssl_state: .
 ssl_locality: .

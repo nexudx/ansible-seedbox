@@ -1,5 +1,0 @@
----
-- hosts: seedbox
-  roles:
-    - common
-    - deploy 
