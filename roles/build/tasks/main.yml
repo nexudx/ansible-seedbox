@@ -22,6 +22,8 @@
     # Optional
     - ffmpeg
     - mediainfo
+    - screen
+    - vim
   sudo: yes
   tags: depends
 

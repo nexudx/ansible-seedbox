@@ -1,6 +1,6 @@
 directory = {{ home }}/rtorrent/download
 session = {{ home }}/rtorrent/session
-watch_directory,5,5,load_start={{ home }}/rtorrent/watch/*.torrent
+schedule = watch_directory,5,5,load_start={{ home }}/rtorrent/watch/*.torrent
 bind = 127.0.0.1
 port_range = {{ port_range }}
 scgi_port = {{ scgi_addr }}

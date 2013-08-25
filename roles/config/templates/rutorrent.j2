@@ -8,8 +8,8 @@
                 AuthType Basic
                 AuthName '{{ ru_login_prompt }}'
                 AuthUserFile '{{ ru_passwd_file }}'
-                #Require valid-user 
-                Require {{ ru_user }}
+                Require valid-user 
+                #Require {{ ru_user }}
                 AllowOverride None
                 Order allow,deny
                 allow from all
