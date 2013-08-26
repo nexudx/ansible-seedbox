@@ -3,7 +3,7 @@
 WIP ansible plabook for setting up rtorrent and rutorrent 
 
 ## Built with:
-| Package | Version | Location
+| Package | Version | Location |
 |:-:|:-:|-|
 | ansible |  1.3 | http://www.ansibleworks.com |
 | xmlrpc-c | stable | http://svn.code.sf.net/p/xmlrpc-c/code/stable/ |
