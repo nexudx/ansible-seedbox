@@ -1,2 +1,4 @@
 ---
-- debug: msg="Common"
+- name: Create readme.md
+  local_action: template src=readme.md.j2 dest=./readme.md
+  tags: documentation
