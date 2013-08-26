@@ -4,7 +4,7 @@ WIP ansible plabook for setting up rtorrent and rutorrent
 
 ## Built with:
 | Package | Version | Location |
-|:-:|:-:|-|
+|---|:-:|---|
 | ansible |  1.3 | http://www.ansibleworks.com |
 | xmlrpc-c | stable | http://svn.code.sf.net/p/xmlrpc-c/code/stable/ |
 | libtorrent | libtorrent-0.13.2 | http://libtorrent.rakshasa.no/downloads/libtorrent-0.13.2.tar.gz | 
