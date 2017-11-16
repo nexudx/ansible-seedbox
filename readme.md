@@ -1,6 +1,6 @@
 # ansible seedbox
 
-WIP ansible plabook for setting up rtorrent and rutorrent 
+ansible playbook for setting up rtorrent and rutorrent on ubuntu 16.04
 
 ## Built with:
 | Package | Version | Location |
