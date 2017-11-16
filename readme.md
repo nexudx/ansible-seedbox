@@ -12,5 +12,6 @@ ansible playbook for setting up rtorrent and rutorrent on ubuntu 16.04
 | rutorrent | rutorrent-3.8 | https://github.com/Novik/ruTorrent/archive/v3.8.zip |  
 
 #### Nice to have TODO
+ * get it done
  * client based ssl certitificat authentication
  * rsync role for syncing local and remote directories
